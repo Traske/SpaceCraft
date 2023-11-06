@@ -128,7 +128,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      pexels-kai-pilger-1341279_0: -4417304033626063636
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
