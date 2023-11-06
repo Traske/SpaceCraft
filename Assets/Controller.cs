@@ -1,38 +1,76 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using UnityEngine.SceneManagement;
 
 public class Controller : MonoBehaviour
 {
     Vector2 velocity;
-    public Transform asteroidTransform;
-    public float warningDistance = 5f;
+    public Transform[] asteroidTransforms;
+    public Transform[] starTransforms;
+    public float warningDistance = 1.5f;
+    public float maxLandingSpeed = 3f; // Maximum landing speed allowed
     public TextMeshProUGUI warningText;
+    private bool hasCollided = false; // Flag to track if the spaceship has already collided with the ground
 
-    // Start is called before the first frame update
     void Start()
     {
-        velocity = Vector2.zero; // Set initial velocity to zero
+        velocity = Vector2.zero;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        MoveSpaceship();
-
-        float distanceToAsteroid = Vector2.Distance(transform.position, asteroidTransform.position);
-
-        if (distanceToAsteroid < warningDistance)
+        if (!hasCollided) // Check if the spaceship has not collided with the ground
         {
-            ShowWarningText();
+            MoveSpaceship();
+
+            Transform nearestObject = CheckNearbyObjects(asteroidTransforms, starTransforms);
+
+            if (nearestObject != null)
+            {
+                if (nearestObject.CompareTag("Asteroid"))
+                {
+                    ShowWarningText("ASTEROID WARNING!");
+                    RestartGame();
+                }
+                else if (nearestObject.CompareTag("Star"))
+                {
+                    CollectStar(nearestObject);
+                }
+            }
+            else
+            {
+                HideWarningText();
+            }
         }
-        else
+    }
+
+    Transform CheckNearbyObjects(Transform[] asteroids, Transform[] stars)
+    {
+        Transform nearestObject = null;
+        float nearestDistance = warningDistance;
+
+        foreach (Transform asteroidTransform in asteroids)
         {
-            HideWarningText();
+            float distanceToObject = Vector2.Distance(transform.position, asteroidTransform.position);
+            if (distanceToObject < nearestDistance)
+            {
+                nearestObject = asteroidTransform;
+                nearestDistance = distanceToObject;
+            }
         }
+
+        foreach (Transform starTransform in stars)
+        {
+            float distanceToObject = Vector2.Distance(transform.position, starTransform.position);
+            if (distanceToObject < nearestDistance)
+            {
+                nearestObject = starTransform;
+                nearestDistance = distanceToObject;
+            }
+        }
+
+        return nearestObject;
     }
 
     void MoveSpaceship()
@@ -43,23 +81,50 @@ public class Controller : MonoBehaviour
         // Set velocity based on input
         velocity = new Vector2(horizontalInput, verticalInput).normalized * 3;
 
-        // Apply gravity (example: a downward force with magnitude 2 units per second squared)
+        // Apply gravity 
         velocity.y -= 40f * Time.deltaTime;
-
 
         // Move the spaceship using Rigidbody2D
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         rb.velocity = velocity;
+
+        // Check if the spaceship is landing with excessive speed
+        if (velocity.y < -maxLandingSpeed)
+        {
+            hasCollided = true; // Set the collision flag to true
+            ShowWarningText("HARD LANDING!");
+            RestartGame();
+        }
     }
 
-
-    void ShowWarningText()
+    void ShowWarningText(string message)
     {
-        warningText.text = "ASTEROID WARNING!"; // Set the text of the UI Text element
+        warningText.text = message;
     }
 
     void HideWarningText()
     {
-        warningText.text = ""; // Clear the text to hide the warning
+        warningText.text = "";
+    }
+
+    void CollectStar(Transform starTransform)
+    {
+        starTransform.GetComponent<Renderer>().enabled = false;
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Ground"))
+        {
+            hasCollided = true; // Set the collision flag to true
+            ShowWarningText("HARD LANDING!");
+            RestartGame();
+        }
+    }
+
+    void RestartGame()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 }
