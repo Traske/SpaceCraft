@@ -1,61 +1,65 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
+using UnityEngine.UI;
+using TMPro;
+
 
 public class Controller : MonoBehaviour
 {
     Vector2 velocity;
-    GameObject finishLine;
-
+    public Transform asteroidTransform;
+    public float warningDistance = 5f;
+    public TextMeshProUGUI warningText;
 
     // Start is called before the first frame update
     void Start()
     {
-        velocity = new Vector2(0, 0);
-        finishLine = GameObject.Find("FinishLine");
+        velocity = Vector2.zero; // Set initial velocity to zero
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(velocity * Time.deltaTime);
-        KeyboardControl();
+        MoveSpaceship();
 
-        Debug.Log(Vector2.Distance(transform.position, finishLine.transform.position));
+        float distanceToAsteroid = Vector2.Distance(transform.position, asteroidTransform.position);
+
+        if (distanceToAsteroid < warningDistance)
+        {
+            ShowWarningText();
+        }
+        else
+        {
+            HideWarningText();
+        }
     }
 
-    void KeyboardControl()
+    void MoveSpaceship()
     {
-        if (Input.GetKey(KeyCode.UpArrow) == true)
-        {
-            velocity.y = -3;
-        }
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
 
-        else if (Input.GetKey(KeyCode.DownArrow) == true)
-        {
-            velocity.y = 3;
-        }
+        // Set velocity based on input
+        velocity = new Vector2(horizontalInput, verticalInput).normalized * 3;
 
-        else
-        {
-            velocity.y = 0;
-        }
+        // Apply gravity (example: a downward force with magnitude 2 units per second squared)
+        velocity.y -= 40f * Time.deltaTime;
 
 
-        if (Input.GetKey(KeyCode.RightArrow) == true)
-        {
-            velocity.x = -3;
-        }
+        // Move the spaceship using Rigidbody2D
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        rb.velocity = velocity;
+    }
 
-        else if (Input.GetKey(KeyCode.LeftArrow) == true)
-        {
-            velocity.x = 3;
-        }
 
-        else
-        {
-            velocity.x = 0;
-        }
+    void ShowWarningText()
+    {
+        warningText.text = "ASTEROID WARNING!"; // Set the text of the UI Text element
+    }
+
+    void HideWarningText()
+    {
+        warningText.text = ""; // Clear the text to hide the warning
     }
 }
