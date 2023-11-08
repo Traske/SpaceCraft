@@ -31,7 +31,7 @@ public class Controller : MonoBehaviour
                 if (nearestObject.CompareTag("Asteroid"))
                 {
                     ShowWarningText("ASTEROID WARNING!");
-                    RestartGame();
+                     // RestartGame();
                 }
                 else if (nearestObject.CompareTag("Star"))
                 {
@@ -41,7 +41,7 @@ public class Controller : MonoBehaviour
             else
             {
                 HideWarningText();
-            }
+            } 
         }
     }
 
@@ -53,17 +53,26 @@ public class Controller : MonoBehaviour
         foreach (Transform asteroidTransform in asteroids)
         {
             float distanceToObject = Vector2.Distance(transform.position, asteroidTransform.position);
-            if (distanceToObject < nearestDistance)
+            if (distanceToObject < 1.5f)
             {
-                nearestObject = asteroidTransform;
-                nearestDistance = distanceToObject;
+               nearestObject = asteroidTransform;
+               nearestDistance = distanceToObject;
+               ShowWarningText("ASTEROID WARNING!");
+            }
+             else if (distanceToObject > 2f)
+            {
+                HideWarningText();
+            } 
+             if (distanceToObject < 1f)
+            {
+                RestartGame();
             }
         }
 
         foreach (Transform starTransform in stars)
         {
             float distanceToObject = Vector2.Distance(transform.position, starTransform.position);
-            if (distanceToObject < nearestDistance)
+            if (distanceToObject < 1f)
             {
                 nearestObject = starTransform;
                 nearestDistance = distanceToObject;
@@ -89,12 +98,12 @@ public class Controller : MonoBehaviour
         rb.velocity = velocity;
 
         // Check if the spaceship is landing with excessive speed
-        if (velocity.y < -maxLandingSpeed)
+        /*if (velocity.y < -maxLandingSpeed)
         {
             hasCollided = true; // Set the collision flag to true
             ShowWarningText("HARD LANDING!");
             RestartGame();
-        }
+        } */
     }
 
     void ShowWarningText(string message)

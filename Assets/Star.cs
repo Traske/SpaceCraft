@@ -32,7 +32,7 @@ public class Star : MonoBehaviour
                 starRenderer.enabled = false;
             }
 
-            // You can add other actions when the spaceship collides with the stars here
+            
         }
     }
 }
