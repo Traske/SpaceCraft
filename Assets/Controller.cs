@@ -8,10 +8,11 @@ public class Controller : MonoBehaviour
     Vector2 velocity;
     public Transform[] asteroidTransforms;
     public Transform[] starTransforms;
-    public float warningDistance = 1.5f;
-    public float maxLandingSpeed = 3f; // Maximum landing speed allowed
-    public TextMeshProUGUI warningText;
-    private bool hasCollided = false; // Flag to track if the spaceship has already collided with the ground
+    public float warningDistance = 2f;
+    public float maxLandingSpeed = 3f; 
+    public TextMeshProUGUI warningTextAsteroid;
+    public TextMeshProUGUI warningTextLanding;
+    private bool hasCollided = false; // Flag to check if the spaceship has collided with the ground
 
     void Start()
     {
@@ -30,8 +31,7 @@ public class Controller : MonoBehaviour
             {
                 if (nearestObject.CompareTag("Asteroid"))
                 {
-                    ShowWarningText("ASTEROID WARNING!");
-                     // RestartGame();
+                    ShowWarningTextAsteroid("ASTEROID WARNING!");
                 }
                 else if (nearestObject.CompareTag("Star"))
                 {
@@ -40,8 +40,8 @@ public class Controller : MonoBehaviour
             }
             else
             {
-                HideWarningText();
-            } 
+                HideWarningTextAsteroid();
+            }
         }
     }
 
@@ -53,17 +53,17 @@ public class Controller : MonoBehaviour
         foreach (Transform asteroidTransform in asteroids)
         {
             float distanceToObject = Vector2.Distance(transform.position, asteroidTransform.position);
-            if (distanceToObject < 1.5f)
+            if (distanceToObject < 1.75f)
             {
-               nearestObject = asteroidTransform;
-               nearestDistance = distanceToObject;
-               ShowWarningText("ASTEROID WARNING!");
+                nearestObject = asteroidTransform;
+                nearestDistance = distanceToObject;
+                ShowWarningTextAsteroid("ASTEROID WARNING!");
             }
-             else if (distanceToObject > 2f)
+            else if (distanceToObject > 2f)
             {
-                HideWarningText();
-            } 
-             if (distanceToObject < 1f)
+                HideWarningTextAsteroid();
+            }
+            if (distanceToObject < 1f)
             {
                 RestartGame();
             }
@@ -83,37 +83,50 @@ public class Controller : MonoBehaviour
     }
 
     void MoveSpaceship()
+{
+    float horizontalInput = Input.GetAxis("Horizontal");
+    float verticalInput = Input.GetAxis("Vertical");
+
+    // velocity based on input
+    velocity = new Vector2(horizontalInput, verticalInput).normalized * 3;
+
+    // Gravity 
+    velocity.y -= 40f * Time.deltaTime;
+
+    // Move the spaceship using Rigidbody2D
+    Rigidbody2D rb = GetComponent<Rigidbody2D>();
+    rb.velocity = velocity;
+
+    // Get the main camera
+    Camera mainCamera = Camera.main;
+
+    // Restricts the spaceships position within the cameras bounds
+    Vector3 clampedPosition = mainCamera.WorldToViewportPoint(transform.position);
+    clampedPosition.x = Mathf.Clamp(clampedPosition.x, 0.04f, 0.96f); 
+    clampedPosition.y = Mathf.Clamp(clampedPosition.y, 0.14f, 0.95f); 
+
+    transform.position = mainCamera.ViewportToWorldPoint(clampedPosition);
+}
+
+
+    void ShowWarningTextAsteroid(string message)
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        // Set velocity based on input
-        velocity = new Vector2(horizontalInput, verticalInput).normalized * 3;
-
-        // Apply gravity 
-        velocity.y -= 40f * Time.deltaTime;
-
-        // Move the spaceship using Rigidbody2D
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        rb.velocity = velocity;
-
-        // Check if the spaceship is landing with excessive speed
-        /*if (velocity.y < -maxLandingSpeed)
-        {
-            hasCollided = true; // Set the collision flag to true
-            ShowWarningText("HARD LANDING!");
-            RestartGame();
-        } */
+        warningTextAsteroid.text = message;
     }
 
-    void ShowWarningText(string message)
+    void HideWarningTextAsteroid()
     {
-        warningText.text = message;
+        warningTextAsteroid.text = "";
     }
 
-    void HideWarningText()
+    void ShowWarningTextLanding(string message)
     {
-        warningText.text = "";
+        warningTextLanding.text = message;
+    }
+
+    void HideWarningTextLanding()
+    {
+        warningTextLanding.text = "";
     }
 
     void CollectStar(Transform starTransform)
@@ -125,9 +138,16 @@ public class Controller : MonoBehaviour
     {
         if (other.CompareTag("Ground"))
         {
-            hasCollided = true; // Set the collision flag to true
-            ShowWarningText("HARD LANDING!");
-            RestartGame();
+            // Check the landing speed
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            float landingSpeed = rb.velocity.magnitude;
+
+            if (landingSpeed > maxLandingSpeed)
+            {
+                hasCollided = true; // Set the collision flag to true
+                ShowWarningTextLanding("HARD LANDING!");
+                RestartGame();
+            }
         }
     }
 

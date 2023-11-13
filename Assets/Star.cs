@@ -18,21 +18,4 @@ public class Star : MonoBehaviour
             starRenderers[i] = starObjects[i].GetComponent<Renderer>();
         }
     }
-
-    // OnTriggerEnter2D is called when another collider enters this object's collider
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        Debug.Log("Trigger entered");
-        if (other.CompareTag("Spaceship")) // Assuming the spaceship has the tag "Spaceship"
-        {
-            Debug.Log("Spaceship entered star trigger zone");
-            // Iterate through all star renderers and make each star invisible by disabling its renderer component
-            foreach (Renderer starRenderer in starRenderers)
-            {
-                starRenderer.enabled = false;
-            }
-
-            
-        }
-    }
 }

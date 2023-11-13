@@ -458,7 +458,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 1461822120206566, guid: 2ce1fb9d977e03b49a1ce0113faf945e, type: 3}
+    - {fileID: 1195293587155644, guid: 2ce1fb9d977e03b49a1ce0113faf945e, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1988959072326566, guid: 2ce1fb9d977e03b49a1ce0113faf945e, type: 3}
@@ -744,8 +746,8 @@ Transform:
   m_GameObject: {fileID: 542988675}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.33, y: -6.12, z: 0.06657565}
-  m_LocalScale: {x: 2.1275213, y: 1.3753039, z: 1}
+  m_LocalPosition: {x: 1.3616, y: -6.0989, z: 0.06657565}
+  m_LocalScale: {x: 2.1215641, y: 1.4422811, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 838485815}
@@ -1877,7 +1879,7 @@ MonoBehaviour:
   - {fileID: 175077935}
   - {fileID: 1366572541}
   - {fileID: 1030511269}
-  warningDistance: 1.5
+  warningDistance: 2
   maxLandingSpeed: 2
   warningText: {fileID: 1632679177}
 --- !u!50 &1419185270
@@ -2070,7 +2072,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 112.6}
+  m_AnchoredPosition: {x: 0, y: 232}
   m_SizeDelta: {x: 388.4934, y: 41.2881}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1632679177
